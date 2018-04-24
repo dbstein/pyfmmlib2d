@@ -23,5 +23,7 @@ I believe all you really need for the setup to run is a numpy, gfortran, and ope
 ### Testing
 I have written and included some basic functionality tests that can be run with pytest (if you have pytest installed, just type "pytest" in the terminal when in the same directory where the install.py file is located). I have not written any tests for the Helmholtz and biharmonic FMMs. Tests exist for all other FMMs, including the Stokes wrapper to the biharmonic FMM.
 
+I have only tested this package with python 3.  Some modification may be necessary for it to work correctly in a python 2 environment.
+
 ### Known Problems
 I attempted briefly to write a test program for the Helmholtz FMM. The HFMM wrapper throws an error, because the hfmm2dparttarg subroutine wants arrays of size (k,1) instead of size (k, n_target), which is what I was expecting.  Because I don't currently need Helmholtz FMMs, I've left looking into this to a later date.

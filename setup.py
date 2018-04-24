@@ -21,7 +21,7 @@ setup(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Scientists/Mathematicians',
         'License :: Apache 2',
-        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
     ],
     ext_modules = [
                     Extension( 'stokesfmm',
