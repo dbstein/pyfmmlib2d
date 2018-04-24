@@ -1,0 +1,1 @@
+On MAC OSX, line 24 of second-r8.f throws an error on importing the compiled .so file.  I have commented this line out.

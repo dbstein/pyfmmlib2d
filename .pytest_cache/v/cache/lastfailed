@@ -1,0 +1,4 @@
+{
+  "tests/test_LFMM.py::test_correctly_input_matrices": true,
+  "tests/test_LFMM.py::test_incorrectly_input_matrices": true
+}

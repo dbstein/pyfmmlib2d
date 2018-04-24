@@ -1,0 +1,7 @@
+[
+  "tests/test_CFMM.py::test_correct_evaluation",
+  "tests/test_LFMM.py::test_correct_evaluation",
+  "tests/test_RFMM.py::test_correct_evaluation",
+  "tests/test_SFMM.py::test_correct_evaluation",
+  "tests/test_ZFMM.py::test_correct_evaluation"
+]
