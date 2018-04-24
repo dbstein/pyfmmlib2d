@@ -4,7 +4,7 @@ A pythonic wrapper for two Fast Multipole Method libraries:
 1. FMMLIB2D, the Fast Multipole Method library for Laplace and Helmholtz equations in two dimensions, written by Leslie Greengard and Zydrunas Gimbutas, and available at: https://github.com/zgimbutas/fmmlib2d
 2. A 2D Stokes Library, written by Manas Rachh (link?)
 
-A unified wrapper with some amount of documentation for the high level FMM functions of both packages is available through the FMM function. Undocumented low level interfaces to all functions are available through the \fmmlib2d and \stokesfmm submodules.
+A unified wrapper with some amount of documentation for the high level FMM functions of both packages is available through the FMM function. Undocumented low level interfaces to all functions are available through the fmmlib2d and stokesfmm submodules.
 
 ### Installation:
 
