@@ -80,3 +80,17 @@ def test_correct_evaluation():
     assert np.allclose(true_xy,   fmm_targ_xy,    rtol=1e-10)
     assert np.allclose(true_yy,   direct_targ_yy, rtol=1e-10)
     assert np.allclose(true_yy,   fmm_targ_yy,    rtol=1e-10)
+
+def test_correct_self_evaluation():
+    true_self = laplace_kernel(source_x, source_x, charge, dipstr*0.0, dipvec)
+
+    # FMM
+    fmm_out = FMM(
+                    kind='laplace',
+                    source = source_x,
+                    charge = charge,
+                    compute_source_potential = True,
+                )
+    fmm_self =    fmm_out['source']['u']
+
+    assert np.allclose(true_self, fmm_self,       rtol=1e-10)

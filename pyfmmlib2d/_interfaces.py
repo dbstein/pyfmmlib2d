@@ -952,7 +952,6 @@ def SFMM(
         forces  = None,
         dipstr  = None,
         dipvec  = None,
-        weights = None,
         compute_source_velocity = False,
         compute_source_stress =   False,
         compute_target_velocity = False,
@@ -970,7 +969,6 @@ def SFMM(
     forces      (optional), float(2, ns): forces at source locations
     dipstr      (optional), float(2, ns): dipole strengths at source locations
     dipvec      (optional), float(2, ns): orientation vector of dipoles
-    weights     (optional), float(ns):    weights to be applied at source points
         if either of dipstr or dipvec is set, the other must be, also
     compute_#_* (optional), bool:         whether to compute * at # locations
     array_#_*   (optional), float(k,n): preallocated arrays for result
@@ -1050,8 +1048,8 @@ def SFMM(
         source_output = {}
         if compute_source_velocity:
             vel = -1.0j*bout['source']['u']
-            correction = np.sum(cc) - cc
             if ifforces:
+                correction = np.sum(cc) - cc
                 vel += 1j*correction
             source_output['u'] = vel.real
             source_output['v'] = vel.imag
