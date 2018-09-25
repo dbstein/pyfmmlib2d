@@ -1,1 +1,17 @@
 On MAC OSX, line 24 of second-r8.f throws an error on importing the compiled .so file.  I have commented this line out.
+
+On lines 267-270 of hfmm2dpart.f, changed:
+
+        real *8 target(2,1)
+        complex *16 pottarg(1)
+        complex *16 gradtarg(2,1)
+        complex *16 hesstarg(3,1)
+
+To:
+
+        real *8 target(2,*)
+        complex *16 pottarg(*)
+        complex *16 gradtarg(2,*)        
+        complex *16 hesstarg(3,*)
+
+(this makes no real difference in Fortran but f2py gets grumpy about it)

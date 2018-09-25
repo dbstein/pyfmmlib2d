@@ -221,7 +221,7 @@ def HFMM(
     charge      (optional), complex(ns):  charges at source locations
     dipstr      (optional), complex(ns):  dipole at source locations
     dipvec      (optional), float(2, ns): orientation vector of dipoles
-        if either of dipstr or dipvec is set, the other must be, also
+        if dipstr is set, then dipvec must be, also
     direct      (optional), bool:         do direct sum or FMM
     compute_#_* (optional), bool:         whether to compute * at # locations
     array_#_*   (optional), complex(k,n): preallocated arrays for result
@@ -280,8 +280,8 @@ def HFMM(
     charge, ifcharge = check_array(charge, (ns,), complex, 'charge')
     dipstr, ifdipstr = check_array(dipstr, (ns,), complex, 'dipstr')
     dipvec, ifdipvec = check_array(dipvec, (2,ns), float, 'dipvec')
-    if (ifdipstr or ifdipvec) and not (ifdipstr and ifdipvec):
-        raise Exception('If either dipstr or dipvec are provided, both must be')
+    if ifdipstr and not ifdipvec:
+        raise Exception('If dipstr is provided, dipvec must be also')
     pot, ifpot = check_output(array_source_potential,
                             compute_source_potential, (1,ns), complex)
     grad, ifgrad = check_output(array_source_gradient,
@@ -360,7 +360,7 @@ def LFMM(
     charge      (optional), complex(ns):  charges at source locations
     dipstr      (optional), complex(ns):  dipole at source locations
     dipvec      (optional), float(2, ns): orientation vector of dipoles
-        if either of dipstr or dipvec is set, the other must be, also
+        if dipstr is set, then dipvec must be, also
     direct      (optional), bool:         do direct sum or FMM
     compute_#_* (optional), bool:         whether to compute * at # locations
     array_#_*   (optional), complex(k,n): preallocated arrays for result
@@ -418,8 +418,8 @@ def LFMM(
     charge, ifcharge = check_array(charge, (ns,), complex, 'charge')
     dipstr, ifdipstr = check_array(dipstr, (ns,), complex, 'dipstr')
     dipvec, ifdipvec = check_array(dipvec, (2,ns), float, 'dipvec')
-    if (ifdipstr or ifdipvec) and not (ifdipstr and ifdipvec):
-        raise Exception('If either dipstr or dipvec are provided, both must be')
+    if ifdipstr and not ifdipvec:
+        raise Exception('If dipstr is provided, dipvec must be also')
     pot, ifpot = check_output(array_source_potential,
                             compute_source_potential, (1,ns), complex)
     grad, ifgrad = check_output(array_source_gradient,
@@ -496,7 +496,7 @@ def RFMM(
     charge      (optional), float(ns):    charges at source locations
     dipstr      (optional), float(ns):    dipole at source locations
     dipvec      (optional), float(2, ns): orientation vector of dipoles
-        if either of dipstr or dipvec is set, the other must be, also
+        if dipstr is set, then dipvec must be, also
     direct      (optional), bool:         do direct sum or FMM
     compute_#_* (optional), bool:         whether to compute * at # locations
     array_#_*   (optional), float(k,n):   preallocated arrays for result
@@ -554,8 +554,8 @@ def RFMM(
     charge, ifcharge = check_array(charge, (ns,), float, 'charge')
     dipstr, ifdipstr = check_array(dipstr, (ns,), float, 'dipstr')
     dipvec, ifdipvec = check_array(dipvec, (2,ns), float, 'dipvec')
-    if (ifdipstr or ifdipvec) and not (ifdipstr and ifdipvec):
-        raise Exception('If either dipstr or dipvec are provided, both must be')
+    if ifdipstr and not ifdipvec:
+        raise Exception('If dipstr is provided, dipvec must be also')
     pot, ifpot = check_output(array_source_potential,
                             compute_source_potential, (1,ns), float)
     grad, ifgrad = check_output(array_source_gradient,
@@ -969,7 +969,7 @@ def SFMM(
     forces      (optional), float(2, ns): forces at source locations
     dipstr      (optional), float(2, ns): dipole strengths at source locations
     dipvec      (optional), float(2, ns): orientation vector of dipoles
-        if either of dipstr or dipvec is set, the other must be, also
+        if dipstr is set, then dipvec must be, also
     compute_#_* (optional), bool:         whether to compute * at # locations
     array_#_*   (optional), float(k,n): preallocated arrays for result
         k = 2 for *=velocity, k=5 for *=stress
@@ -1007,8 +1007,8 @@ def SFMM(
     forces, ifforces = check_array(forces, (2, ns), float, 'forces')
     dipstr, ifdipstr = check_array(dipstr, (2, ns), float, 'dipstr')
     dipvec, ifdipvec = check_array(dipvec, (2, ns), float, 'dipvec')
-    if (ifdipstr or ifdipvec) and not (ifdipstr and ifdipvec):
-        raise Exception('If either dipstr or dipvec are provided, both must be')
+    if ifdipstr and not ifdipvec:
+        raise Exception('If dipstr is provided, dipvec must be also')
     # construct inputs for the biharmonic FMM
     sca = 1.0/(4.0*np.pi)
     if ifforces:
