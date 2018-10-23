@@ -15,3 +15,6 @@ To:
         complex *16 hesstarg(3,*)
 
 (this makes no real difference in Fortran but f2py gets grumpy about it)
+
+Made changes to hfmm2dpart.f to allow fast computation of modified laplace kernels,
+See the file

@@ -1,3 +1,18 @@
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc This is a modified version of hfmm2dpart.f
+cc The purpose of these modifications is to provide fast evaluation
+cc For modified Laplace potentials (strictly imaginary zk)
+cc The change made is to change the call to h2dterms to l2dterms
+cc When the size of the real part of the wave vector is < 1e-10
+cc The changes to the code are made on lines 479-486
+cc
+cc This change was suggested by Manas Rachh
+cc When the function is decaying instead of oscillatory, using these
+cc Asymptotics keeps the FMM from using unecessary terms in the expansion
+cc
+cc David Stein, 2018
+cc Contact: dstein@flatironinstitute.org
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cc Copyright (C) 2009-2012: Leslie Greengard and Zydrunas Gimbutas
 cc Contact: greengard@cims.nyu.edu
 cc 
@@ -461,7 +476,13 @@ c
         nmax = 0
         do i = 0,nlev
            bsize(i)=size/2.0d0**i
-           call h2dterms(bsize(i),zk,epsfmm, nterms(i), ier)
+c       changes made here to call l2dterms when zk is
+c       purely (or at least, mostly) imaginary    
+           if (abs(real(zk)) < 1.0e-10) then
+              call l2dterms(epsfmm,nterms(i),ier)
+           else
+              call h2dterms(bsize(i),zk,epsfmm, nterms(i), ier)
+            endif
            if (nterms(i).gt. nmax .and. i.ge. 2) nmax = nterms(i)
         enddo
 c
