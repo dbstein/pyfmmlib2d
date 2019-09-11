@@ -1067,6 +1067,7 @@ def SFMM(
             source_output['u_y'] = uy
             source_output['v_x'] = vx
             source_output['v_y'] = vy
+            source_output['p']   = p
         output['source'] = source_output
     any_target = compute_target_velocity or compute_target_stress
     if any_target:

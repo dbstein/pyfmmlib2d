@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
 from codecs import open
 from os import path
+import os
 from numpy.distutils.core import setup, Extension
 
 here = path.abspath(path.dirname(__file__))
@@ -8,6 +9,10 @@ here = path.abspath(path.dirname(__file__))
 # Get the long description from the README file
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
+
+os.environ["CC"] = "gcc-8"
+os.environ["CXX"] = "g++-8"
+os.environ["FC"] = "gfortran-8"
 
 setup(
     name='pyfmmlib2d',
@@ -38,11 +43,9 @@ setup(
                          'stokesfmm/laprouts2d.f',
                          'stokesfmm/prini.f',
                         ],
-                        extra_f77_compile_args=['-O3','-fopenmp'],
-                        extra_f90_compile_args=['-O3','-fopenmp'],
-                        libraries=['iomp5',],),
-                        # note the linkage to iomp5, if you link to gomp instead
-                        # this breaks threaded MKL linkage in numpy on MACOSX
+                        extra_f77_compile_args=['-O3', '-fopenmp'],
+                        extra_f90_compile_args=['-O3', '-fopenmp'],
+                        libraries=['gomp'],),
                     Extension( 'fmmlib2d',
                         ['fmmlib2d/src/cdjseval2d.f',
                          'fmmlib2d/src/cfmm2dpart.f',
@@ -62,9 +65,9 @@ setup(
                          'fmmlib2d/src/second-r8.f',
                          'fmmlib2d/src/zfmm2dpart.f',
                         ],
-                        extra_f77_compile_args=['-O3','-fopenmp'],
-                        extra_f90_compile_args=['-O3','-fopenmp'],
-                        libraries=['iomp5',],)
+                        extra_f77_compile_args=['-O3', '-fopenmp'],
+                        extra_f90_compile_args=['-O3', '-fopenmp'],
+                        libraries=['gomp'],)
                     ],
     packages=find_packages(),
     install_requires=[],
