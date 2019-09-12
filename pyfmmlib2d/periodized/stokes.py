@@ -131,8 +131,6 @@ class periodized_stokes_fmm(object):
         # get total forces
         tfx = np.sum(forces[0])
         tfy = np.sum(forces[1])
-        forces[0] -= np.mean(forces[0])
-        forces[1] -= np.mean(forces[1])
         # get the first set of periodically tiled sources
         source_00 = source.copy()
         source_00[0] -= self.width
@@ -202,10 +200,10 @@ class periodized_stokes_fmm(object):
         ujumpy = check_u[3*p:4*p] - check_u[2*p:3*p]
         vjumpx = check_v[1*p:2*p] - check_v[0*p:1*p]
         vjumpy = check_v[3*p:4*p] - check_v[2*p:3*p]
-        snxjumpx = check_snx[1*p:2*p] - check_snx[0*p:1*p]
+        snxjumpx = check_snx[1*p:2*p] - check_snx[0*p:1*p] + tfx/self.width
         snxjumpy = check_snx[3*p:4*p] - check_snx[2*p:3*p]
         snyjumpx = check_sny[1*p:2*p] - check_sny[0*p:1*p]
-        snyjumpy = check_sny[3*p:4*p] - check_sny[2*p:3*p]
+        snyjumpy = check_sny[3*p:4*p] - check_sny[2*p:3*p] + tfy/self.width
         ujumps = np.concatenate([ujumpx, ujumpy, vjumpx, vjumpy, snxjumpx, snxjumpy, snyjumpx, snyjumpy])
         # solve for sources that set these jumps to 0
         tau = -self.VT.T.dot(self.U.T.dot(ujumps)*self.DI)

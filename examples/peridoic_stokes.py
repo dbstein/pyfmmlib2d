@@ -26,8 +26,8 @@ source = np.row_stack([source_x, source_y])
 source_x_normal = np.cos(theta)
 source_y_normal = np.sin(theta)
 source_normal = np.row_stack([source_x_normal, source_y_normal])
-# get forces and dipstrs (forces must have mean 0)
-forces = np.row_stack([ np.sin(2*theta+np.pi/3), np.cos(2*theta+np.pi/3) ])*theta_h
+# get forces and dipstrs
+forces = np.row_stack([ -np.exp(np.sin(2*theta+np.pi/3)), 1 + np.cos(2*theta+np.pi/3) ])*theta_h
 dipstr = np.row_stack([ np.exp(np.cos(2*theta)), np.cos(2*theta+np.pi/3) ])*theta_h
 
 pfmm = periodized_stokes_fmm([0,np.e,0,np.e], 64, 1e-14)
