@@ -88,12 +88,15 @@ class periodized_stokes_fmm(object):
         self.bounds = bounds
         self.p = p
         # compute the location of the collocation nodes
-        nodes = 0.5*np.polynomial.chebyshev.chebgauss(p)[0][::-1] + 0.5
+        # nodes = 0.5*np.polynomial.chebyshev.chebgauss(p)[0][::-1] + 0.5
+        nodes, weights = np.polynomial.legendre.leggauss(p)
+        nodes = nodes * 0.5 + 0.5
         ranx = bounds[1] - bounds[0]
         rany = bounds[3] - bounds[2]
         if np.abs(ranx - rany) > 1e-15:
             raise Exception('For now, periodization bounds must be a square.')
         self.width = ranx
+        self.weights = weights*0.5*self.width
         nodey = nodes*rany + bounds[2]
         rep = lambda x: np.repeat(x, p)
         self.node_left  = np.row_stack([ rep(bounds[0]), nodey ])
@@ -139,14 +142,8 @@ class periodized_stokes_fmm(object):
         self.MAT[5*p:6*p] = S2SNx[3*p:4*p] - S2SNx[2*p:3*p]
         self.MAT[6*p:7*p] = S2SNy[1*p:2*p] - S2SNy[0*p:1*p]
         self.MAT[7*p:8*p] = S2SNy[3*p:4*p] - S2SNy[2*p:3*p]
-        self.BIG_MAT = np.zeros([2*self.n_check+2, 2*self.n_sources+2], dtype=float)
-        self.BIG_MAT[:-2,:-2] = self.MAT
-        self.BIG_MAT[-2, 0*self.n_sources:1*self.n_sources] = 1.0
-        self.BIG_MAT[-1, 1*self.n_sources:2*self.n_sources] = 1.0
-        self.BIG_MAT[0*self.n_sources:1*self.n_sources, -2] = 1.0
-        self.BIG_MAT[1*self.n_sources:2*self.n_sources, -1] = 1.0
         # take the SVD of this matrix
-        self.U, D, self.VT = np.linalg.svd(self.BIG_MAT, full_matrices=False)
+        self.U, D, self.VT = np.linalg.svd(self.MAT, full_matrices=False)
         D[D < eps] = np.Inf
         self.DI = 1.0/D
     def __call__(self, source, target, forces=None, dipstr=None, dipvec=None):
@@ -227,12 +224,8 @@ class periodized_stokes_fmm(object):
         snyjumpx = (check_sny[1*p:2*p] - check_sny[0*p:1*p])
         snyjumpy = (check_sny[3*p:4*p] - check_sny[2*p:3*p] + tfy/self.width)
         ujumps = np.concatenate([ujumpx, ujumpy, vjumpx, vjumpy, snxjumpx, snxjumpy, snyjumpx, snyjumpy])
-        ujumps = np.concatenate([ ujumps, (-9*tfx, -9*tfy) ])
         # solve for sources that set these jumps to 0
-        tau = -self.VT.T.dot(self.U.T.dot(ujumps)*self.DI)[:-2]
-        tau[:self.n_sources] -= tau[-2]*9
-        tau[self.n_sources:-2] -= tau[-1]*9
-        print(tau[-2:])
+        tau = -self.VT.T.dot(self.U.T.dot(ujumps)*self.DI)
         # compute the periodic correction at the sources and targets
         big_target = np.column_stack([ source, target ])
         out2 = SFMM(
@@ -253,19 +246,14 @@ class periodized_stokes_fmm(object):
         source_dict = {}
         target_dict = {}
         ww = fejer_1(self.p)[1]*self.width/2
+        ww = self.weights
         for item in ['u', 'v', 'u_x', 'v_x', 'p']:
             if item == 'u':
                 uu = check_u[1*p:2*p] + out3['target']['u'][1*p:2*p]
-                adder = -np.sum(uu*ww)
-                print(adder)
-                adder = tau[-2]*0.0
-                print(adder)
+                adder = -np.sum(uu*ww)/self.width
             elif item == 'v':
                 vv = check_v[3*p:4*p] + out3['target']['v'][3*p:4*p]
-                adder = -np.sum(vv*ww)
-                print(adder)
-                adder = tau[-1]*0.0
-                print(adder)
+                adder = -np.sum(vv*ww)/self.width
             else:
                 adder = 0.0
             source_dict[item] = out1['source'][item][4*SN:5*SN] + out2['target'][item][:SN] + adder
