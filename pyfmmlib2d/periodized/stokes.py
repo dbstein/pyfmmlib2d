@@ -230,6 +230,8 @@ class periodized_stokes_fmm(object):
         ujumps = np.concatenate([ ujumps, (-9*tfx, -9*tfy) ])
         # solve for sources that set these jumps to 0
         tau = -self.VT.T.dot(self.U.T.dot(ujumps)*self.DI)[:-2]
+        tau[:self.n_sources] -= tau[-2]*9
+        tau[self.n_sources:-2] -= tau[-1]*9
         print(tau[-2:])
         # compute the periodic correction at the sources and targets
         big_target = np.column_stack([ source, target ])
@@ -256,13 +258,13 @@ class periodized_stokes_fmm(object):
                 uu = check_u[1*p:2*p] + out3['target']['u'][1*p:2*p]
                 adder = -np.sum(uu*ww)
                 print(adder)
-                adder = tau[-2]*256
+                adder = tau[-2]*0.0
                 print(adder)
             elif item == 'v':
                 vv = check_v[3*p:4*p] + out3['target']['v'][3*p:4*p]
                 adder = -np.sum(vv*ww)
                 print(adder)
-                adder = tau[-1]*256
+                adder = tau[-1]*0.0
                 print(adder)
             else:
                 adder = 0.0
