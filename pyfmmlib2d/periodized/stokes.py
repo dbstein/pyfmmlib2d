@@ -1,23 +1,6 @@
 import numpy as np
 from pyfmmlib2d import SFMM
 
-def fejer_1(n):
-    points = -np.cos(np.pi * (np.arange(n) + 0.5) / n)
-    N = np.arange(1, n, 2)
-    length = len(N)
-    m = n - length
-    K = np.arange(m)
-    v0 = np.concatenate(
-        [
-            2 * np.exp(1j * np.pi * K / n) / (1 - 4 * K ** 2),
-            np.zeros(length + 1),
-        ]
-    )
-    v1 = v0[:-1] + np.conjugate(v0[:0:-1])
-    w = np.fft.ifft(v1)
-    weights = w.real
-    return points, weights
-
 def stokes_kernel(sx, tx):
     ns = sx.shape[1]
     nt = tx.shape[1]
@@ -88,7 +71,6 @@ class periodized_stokes_fmm(object):
         self.bounds = bounds
         self.p = p
         # compute the location of the collocation nodes
-        # nodes = 0.5*np.polynomial.chebyshev.chebgauss(p)[0][::-1] + 0.5
         nodes, weights = np.polynomial.legendre.leggauss(p)
         nodes = nodes * 0.5 + 0.5
         ranx = bounds[1] - bounds[0]
@@ -123,6 +105,8 @@ class periodized_stokes_fmm(object):
         if adj < -0.5:
             raise Exception('Increase p (or decrease eps) to guarantee convergence.')
         Radius = radius/(1 + adj)
+        dd = 0.0
+        Radius = 0.5*self.width*(4-np.sqrt(2)-2*dd)
         theta = np.linspace(0, 2*np.pi, self.n_check, endpoint=False)
         self.source = np.row_stack([ self.center[0] + Radius*np.cos(theta),
                                      self.center[1] + Radius*np.sin(theta) ])
@@ -142,8 +126,14 @@ class periodized_stokes_fmm(object):
         self.MAT[5*p:6*p] = S2SNx[3*p:4*p] - S2SNx[2*p:3*p]
         self.MAT[6*p:7*p] = S2SNy[1*p:2*p] - S2SNy[0*p:1*p]
         self.MAT[7*p:8*p] = S2SNy[3*p:4*p] - S2SNy[2*p:3*p]
+        self.BIG_MAT = np.zeros([2*self.n_check+2, 2*self.n_sources+2], dtype=float)
+        self.BIG_MAT[:-2,:-2] = self.MAT
+        self.BIG_MAT[-2,0*self.n_sources:1*self.n_sources] = 1.0
+        self.BIG_MAT[-1,1*self.n_sources:2*self.n_sources] = 1.0
+        self.BIG_MAT[0*self.n_sources:1*self.n_sources,-2] = 1.0
+        self.BIG_MAT[1*self.n_sources:2*self.n_sources,-1] = 1.0
         # take the SVD of this matrix
-        self.U, D, self.VT = np.linalg.svd(self.MAT, full_matrices=False)
+        self.U, D, self.VT = np.linalg.svd(self.BIG_MAT, full_matrices=False)
         D[D < eps] = np.Inf
         self.DI = 1.0/D
     def __call__(self, source, target, forces=None, dipstr=None, dipvec=None):
@@ -224,8 +214,8 @@ class periodized_stokes_fmm(object):
         snyjumpx = (check_sny[1*p:2*p] - check_sny[0*p:1*p])
         snyjumpy = (check_sny[3*p:4*p] - check_sny[2*p:3*p] + tfy/self.width)
         ujumps = np.concatenate([ujumpx, ujumpy, vjumpx, vjumpy, snxjumpx, snxjumpy, snyjumpx, snyjumpy])
-        # solve for sources that set these jumps to 0
-        tau = -self.VT.T.dot(self.U.T.dot(ujumps)*self.DI)
+        ujumps = np.concatenate([ujumps, (0.0, 0.0)])
+        tau = -self.VT.T.dot(self.U.T.dot(ujumps)*self.DI)[:-2]
         # compute the periodic correction at the sources and targets
         big_target = np.column_stack([ source, target ])
         out2 = SFMM(
@@ -245,21 +235,24 @@ class periodized_stokes_fmm(object):
         SN = source.shape[1]
         source_dict = {}
         target_dict = {}
-        ww = fejer_1(self.p)[1]*self.width/2
         ww = self.weights
         for item in ['u', 'v', 'u_x', 'v_x', 'p']:
             if item == 'u':
                 uu = check_u[1*p:2*p] + out3['target']['u'][1*p:2*p]
                 adder = -np.sum(uu*ww)/self.width
+                stopx = adder
+                # stopx = np.sum(check_u[1*p:2*p]*ww)/self.width
+                # stopy = np.sum(out3['target']['u'][1*p:2*p]*ww)/self.width
             elif item == 'v':
                 vv = check_v[3*p:4*p] + out3['target']['v'][3*p:4*p]
                 adder = -np.sum(vv*ww)/self.width
+                stopy = adder
             else:
                 adder = 0.0
             source_dict[item] = out1['source'][item][4*SN:5*SN] + out2['target'][item][:SN] + adder
             target_dict[item] = out1['target'][item][self.n_check:] + out2['target'][item][SN:] + adder
 
-        return { 'source' : source_dict, 'target' : target_dict }
+        return { 'source' : source_dict, 'target' : target_dict }, stopx, stopy
 
 
 

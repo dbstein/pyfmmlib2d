@@ -10,9 +10,9 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
-os.environ["CC"] = "gcc-8"
-os.environ["CXX"] = "g++-8"
-os.environ["FC"] = "gfortran-8"
+os.environ["CC"] = "gcc"
+os.environ["CXX"] = "g++"
+os.environ["FC"] = "gfortran"
 
 setup(
     name='pyfmmlib2d',
