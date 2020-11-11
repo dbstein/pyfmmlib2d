@@ -31,7 +31,7 @@ charge = np.sin(2*theta+np.pi/3)*theta_h
 dipstr = -np.exp(np.cos(2*theta))*theta_h
 
 pfmm = periodized_laplace_fmm([0,np.e,0,np.e], 32)
-out = pfmm(source, grid, charge=charge, dipstr=dipstr, dipvec=source_normal)
+out = pfmm(source, target=grid, charge=charge, dipstr=dipstr, dipvec=source_normal, compute_target_potential=True)
 u = out['target']['u'].reshape([n_grid, n_grid])
 
 # plot the solution, check that it's periodic
