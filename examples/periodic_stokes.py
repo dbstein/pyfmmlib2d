@@ -33,7 +33,7 @@ forces = np.row_stack([ np.exp(np.sin(2*theta+np.pi/3))-1.0, 0.1 + np.cos(2*thet
 dipstr = np.row_stack([ np.exp(np.cos(2*theta)), np.cos(2*theta+np.pi/3) ])*theta_h*int(dipoles)
 
 pfmm = periodized_stokes_fmm([0,np.e,0,np.e])
-out = pfmm(source, forces=forces, dipstr=dipstr, dipvec=source_normal, compute_target_velocity=True, compute_target_stress=True, target=grid)
+out = pfmm(source+np.e, forces=forces, dipstr=dipstr, dipvec=source_normal, compute_target_velocity=True, compute_target_stress=True, target=grid+2*np.e)
 forcetot = np.sum(forces, axis=1)
 
 u = out['target']['u'].reshape([n_grid, n_grid])

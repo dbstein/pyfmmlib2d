@@ -2,6 +2,7 @@ import numpy as np
 import scipy as sp
 import scipy.linalg
 from pyfmmlib2d import RFMM
+from pyfmmlib2d.periodized.shift_to_box import shift_to_box
 
 ipi2 = 0.5/np.pi
 
@@ -228,6 +229,10 @@ class periodized_laplace_fmm(object):
 
         Reflection distance is how far to head to each side of the domain in order to tile (as percent of domain size...)
         """
+        # shift both the source and the target into box
+        source = shift_to_box(source, self.bounds)
+        target = shift_to_box(target, self.bounds) if target is not None else None
+
         dist_x = tiling_distance * self.ranx
         dist_y = tiling_distance * self.rany
         if compute_target_potential or compute_target_gradient:

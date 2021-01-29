@@ -1,5 +1,6 @@
 import numpy as np
 from pyfmmlib2d import SFMM
+from pyfmmlib2d.periodized.shift_to_box import shift_to_box
 
 def stokes_kernel(sx, tx, w):
     ns = sx.shape[1]
@@ -553,6 +554,10 @@ class periodized_stokes_fmm(object):
             assert target is not None, 'Need to give target to compute target velocity or stresses'
         if target is None:
             target = np.zeros([2,1])
+
+        # shift both the source and the target into box
+        source = shift_to_box(source, self.bounds)
+        target = shift_to_box(target, self.bounds) if target is not None else None
 
         # separate sources up into quadrants to allow clean flux compuations
         lefties = source[0] < self.center[0]
