@@ -199,30 +199,31 @@ class periodized_laplace_fmm(object):
         self.check_bottom_dun[:] = 0.0
         self.check_top_dun[:]    = 0.0
     def compute_to_check(self, src, ch, dps, dpv, left, right, bottom, top):
-        out = RFMM(
-                source = src,
-                target = self.check,
-                charge = ch,
-                dipstr = dps,
-                dipvec = dpv,
-                compute_target_potential = True,
-                compute_target_gradient = True
-            )
-        u = out['target']['u']
-        ux = out['target']['u_x']
-        uy = out['target']['u_y']
-        if left:
-            self.check_left_u += u[self.slice_left]
-            self.check_left_dun += ux[self.slice_left]*self.normal_left[0]
-        if right:
-            self.check_right_u += u[self.slice_right]
-            self.check_right_dun += ux[self.slice_right]*self.normal_right[0]
-        if bottom:
-            self.check_bottom_u += u[self.slice_bottom]
-            self.check_bottom_dun += uy[self.slice_bottom]*self.normal_bottom[1]
-        if top:
-            self.check_top_u += u[self.slice_top]
-            self.check_top_dun += uy[self.slice_top]*self.normal_top[1]
+        if np.prod(src.shape) > 0:
+            out = RFMM(
+                    source = src,
+                    target = self.check,
+                    charge = ch,
+                    dipstr = dps,
+                    dipvec = dpv,
+                    compute_target_potential = True,
+                    compute_target_gradient = True
+                )
+            u = out['target']['u']
+            ux = out['target']['u_x']
+            uy = out['target']['u_y']
+            if left:
+                self.check_left_u += u[self.slice_left]
+                self.check_left_dun += ux[self.slice_left]*self.normal_left[0]
+            if right:
+                self.check_right_u += u[self.slice_right]
+                self.check_right_dun += ux[self.slice_right]*self.normal_right[0]
+            if bottom:
+                self.check_bottom_u += u[self.slice_bottom]
+                self.check_bottom_dun += uy[self.slice_bottom]*self.normal_bottom[1]
+            if top:
+                self.check_top_u += u[self.slice_top]
+                self.check_top_dun += uy[self.slice_top]*self.normal_top[1]
     def __call__(self, source, tiling_distance=0.15, charge=None, dipstr=None, dipvec=None, target=None, compute_source_potential=False, compute_source_gradient=False, compute_target_potential=False, compute_target_gradient=False):
         """
         Periodic Laplace FMM
