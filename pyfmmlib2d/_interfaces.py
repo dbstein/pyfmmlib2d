@@ -47,7 +47,7 @@ def check_array(arr, shape, mytype, name, return_2dim=False):
     """
     if arr is None:
         sh = get_dummy_shape(shape)
-        arr = np.empty(sh, order='F', dtype=mytype)
+        arr = np.zeros(sh, order='F', dtype=mytype)
         here = int(0)
     else:
         if type(arr) != np.ndarray:
@@ -89,11 +89,11 @@ def check_output(arr, used, shape, mytype):
             if not (test1 and test2 and test3):
                 arr = None
         if arr is None:
-            arr = np.empty(shape, order='F', dtype=mytype)
+            arr = np.zeros(shape, order='F', dtype=mytype)
         else:
             arr = arr.astype(mytype, order='F', copy=False)
     else:
-        arr = np.empty(get_dummy_shape(shape), order='F', dtype=mytype)
+        arr = np.zeros(get_dummy_shape(shape), order='F', dtype=mytype)
     return arr, int(used)
 def get_fmmlib2d_output(csp,csg,csh,sp,sg,sh,ctp,ctg,cth,tp,tg,th,ier):
     output = {}
