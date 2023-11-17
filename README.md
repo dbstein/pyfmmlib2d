@@ -19,6 +19,8 @@ I believe all you really need for the setup to run is a numpy, gfortran, and ope
 2. The installer will not check that you have numpy installed (in particular, this is to avoid breaking peoples conda-based installations by having pip update things).
 3. If you don't have OpenMP installed, just remove lines 45/46 from setup.py.
 4. If you have a different Fortran compiler than gfortran installed you will have to make the other obvious modifications to setup.py (compile and link flags). I have compiled this with both gfortran and ifort without issue.
+5. If you're on Mac OSX and you get things about libraries not being found, try export 
+LIBRARY_PATH="$LIBRARY_PATH:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
 
 ### Testing
 I have written and included some basic functionality tests that can be run with pytest (if you have pytest installed, just type "pytest" in the terminal when in the same directory where the install.py file is located). I have not written any tests for the Helmholtz and biharmonic FMMs. Tests exist for all other FMMs, including the Stokes wrapper to the biharmonic FMM. I have only tested this package with python 3.  Some modification may be necessary for it to work correctly in a python 2 environment.
